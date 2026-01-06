@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Resume Analyzer & Job Finder</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <h1>AI JOB SEARCH</h1>
+        <p>Upload your resume → AI analysis → Find jobs</p>
+    </header>
+
+    <!-- ================= FORM ================= -->
+    <section class="form-section" id="form-section">
+
+        <div class="form-grid">
+
+            <!-- Drag & Drop Upload -->
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📄</div>
+                <p id="upload-text">Drag & drop your PDF resume here<br>or click to browse</p>
+                <small>(PDF only · OCR supported)</small>
+                <input type="file" id="resume-file" accept=".pdf" hidden>
+            </div>
+
+            <div class="input-group">
+                <label>🎯 Target role (optional)</label>
+                <input type="text" id="desired-role" placeholder="AI Engineer, Frontend Developer">
+            </div>
+
+            <div class="input-group">
+                <label>📍 City</label>
+                <input type="text" id="city" placeholder="Coimbatore">
+            </div>
+
+            <div class="input-group">
+                <label>🌍 Country</label>
+                <input type="text" id="country" value="IN">
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="remote-only">
+                    Remote only
+                </label>
+            </div>
+
+            <button class="analyze-btn" id="analyze-btn" disabled>
+                🔍 Analyze Resume
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing resume… matching jobs…</p>
+        </div>
+
+    </section>
+
+    <!-- ================= RESULTS ================= -->
+    <section class="results" id="results">
+        <div class="analysis-grid" id="analysis-grid"></div>
+        <div class="jobs-grid" id="jobs-grid"></div>
+
+        <button class="analyze-btn reset-btn" id="reset-btn">
+            🔄 Analyze Another Resume
+        </button>
+    </section>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
