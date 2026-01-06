@@ -27,21 +27,22 @@ fileInput.addEventListener("change", () => {
     }
 
     uploadText.innerHTML = `✅ ${file.name}`;
+    uploadArea.classList.add("uploaded");
     analyzeBtn.disabled = false;
 });
 
 /* =========================
    Drag & Drop
 ========================= */
-["dragenter", "dragover"].forEach(event => {
-    uploadArea.addEventListener(event, e => {
+["dragenter", "dragover"].forEach(evt => {
+    uploadArea.addEventListener(evt, e => {
         e.preventDefault();
         uploadArea.classList.add("dragover");
     });
 });
 
-["dragleave", "drop"].forEach(event => {
-    uploadArea.addEventListener(event, e => {
+["dragleave", "drop"].forEach(evt => {
+    uploadArea.addEventListener(evt, e => {
         e.preventDefault();
         uploadArea.classList.remove("dragover");
     });
@@ -56,6 +57,7 @@ uploadArea.addEventListener("drop", e => {
 
     fileInput.files = e.dataTransfer.files;
     uploadText.innerHTML = `✅ ${file.name}`;
+    uploadArea.classList.add("uploaded");
     analyzeBtn.disabled = false;
 });
 
@@ -64,6 +66,8 @@ uploadArea.addEventListener("drop", e => {
 ========================= */
 analyzeBtn.addEventListener("click", async () => {
     if (!fileInput.files.length) return;
+
+    analyzeBtn.disabled = true;
 
     const formData = new FormData();
     formData.append("resume", fileInput.files[0]);
@@ -84,9 +88,7 @@ analyzeBtn.addEventListener("click", async () => {
             body: formData
         });
 
-        if (!res.ok) {
-            throw new Error("Analysis failed");
-        }
+        if (!res.ok) throw new Error("Analysis failed");
 
         const data = await res.json();
         renderResults(data);
@@ -97,6 +99,7 @@ analyzeBtn.addEventListener("click", async () => {
         window.location.reload();
     } finally {
         loading.style.display = "none";
+        analyzeBtn.disabled = false;
     }
 });
 
@@ -106,13 +109,13 @@ analyzeBtn.addEventListener("click", async () => {
 function renderResults(data) {
     results.style.display = "block";
 
-    /* Analysis */
     analysisGrid.innerHTML = `
         <div class="analysis-card">
             <div class="role-badge">💯 Score: ${data.resume_score ?? 0}%</div>
             <h3>${data.analysis?.role || "Professional"}</h3>
             <p>${data.analysis?.summary || "Profile analyzed successfully."}</p>
         </div>
+
         <div class="analysis-card">
             <h3>Skills</h3>
             <div class="skills-tags">
@@ -123,7 +126,6 @@ function renderResults(data) {
         </div>
     `;
 
-    /* Jobs */
     if (!data.jobs || data.jobs.length === 0) {
         jobsGrid.innerHTML = `
             <div class="job-card">
@@ -131,21 +133,21 @@ function renderResults(data) {
                 <p>Try a different role or city.</p>
             </div>
         `;
-        return;
+    } else {
+        jobsGrid.innerHTML = data.jobs.map(job => `
+            <div class="job-card">
+                <h3>${job.title || "Job Role"}</h3>
+                <p>${job.company || "Company"} • ${job.location || ""}</p>
+                ${
+                    job.url && job.url.startsWith("http")
+                        ? `<a class="job-link" href="${job.url}" target="_blank">View Job</a>`
+                        : `<span style="opacity:.6">Job link unavailable</span>`
+                }
+            </div>
+        `).join("");
     }
 
-    jobsGrid.innerHTML = data.jobs.map(job => `
-        <div class="job-card">
-            <h3>${job.title || "Job Role"}</h3>
-            <p>${job.company || "Company"} • ${job.location || ""}</p>
-
-            ${
-                job.url && job.url.startsWith("http")
-                    ? `<a class="job-link" href="${job.url}" target="_blank" rel="noopener noreferrer">View Job</a>`
-                    : `<span style="opacity:.6">Job link unavailable</span>`
-            }
-        </div>
-    `).join("");
+    results.scrollIntoView({ behavior: "smooth" });
 }
 
 /* =========================
