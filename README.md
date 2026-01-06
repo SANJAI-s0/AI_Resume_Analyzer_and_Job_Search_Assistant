@@ -47,6 +47,7 @@ job-search-assistant/
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # Project documentation
 ├── DATABASE.md                # Database design & notes
+├── LICENSE                    # License of this project
 ├── pytest.ini                 # Pytest config & warning filters
 ├── .env                       # Environment variables (ignored by git)
 ├── .gitignore                 # Git ignore rules
